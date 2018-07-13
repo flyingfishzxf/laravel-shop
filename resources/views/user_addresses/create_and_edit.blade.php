@@ -1,12 +1,12 @@
 @extends('layouts.app')
-@section('title', '新增收货地址')
+@section('title', ($address->id ? '修改' : '新增') . '收货地址')
 
 @section('content')
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h2 class="text-center">新增收货地址</h2>
+                    <h2 class="text-center">{{ $address->id ? '修改' : '新增' }}收货地址</h2>
                 </div>
                 <div class="panel-body">
                     {{-- 输出后端报错开始 --}}
@@ -23,11 +23,16 @@
                     {{-- 输出后端报错结束 --}}
                     {{-- inline-template 代表通过内联方式引入组件 --}}
                     <user-addresses-create-and-edit inline-template>
-                        <form role="form" class="form-horizontal" method="post" action="{{ route('user_addresses.store') }}">
+                        @if($address->id)
+                            <form role="form" class="form-horizontal" method="post" action="{{ route('user_addresses.update', ['user_address' => $address->id]) }}">
+                                {{ method_field('PUT') }}
+                        @else
+                            <form role="form" class="form-horizontal" method="post" action="{{ route('user_addresses.store') }}">
+                        @endif
                             {{-- 引入 csrf_token 字段 --}}
                             {{ csrf_field() }}
                             {{-- inline-template 代表通过内联方式引入组件 --}}
-                            <select-district @change="onDistrictChanged" inline-template>
+                            <select-district :init-value="{{ json_encode([$address->province, $address->city, $address->district]) }}" @change="onDistrictChanged" inline-template>
                                 <div class="form-group">
                                     <label class="control-label col-sm-2">省市区</label>
                                     <div class="col-sm-3">

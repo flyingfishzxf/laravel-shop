@@ -2,7 +2,6 @@
 
 Route::redirect('/', '/products')->name('root');
 Route::get('products', 'ProductsController@index')->name('products.index');
-Route::get('products/{product}', 'ProductsController@show')->name('products.show');
 Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {
@@ -20,5 +19,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::post('products/{product}/favorite', 'ProductsController@favor')->name('products.favor');
         Route::delete('products/{product}/favorite', 'ProductsController@disfavor')->name('products.disfavor');
+        Route::get('products/favorites', 'ProductsController@favorites')->name('products.favorites');
     });
 });
+Route::get('products/{product}', 'ProductsController@show')->name('products.show');

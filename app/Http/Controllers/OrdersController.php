@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\OrderRequest;
+use App\Http\Requests\Request;
 use App\Jobs\CloseOrder;
 use App\Models\Order;
 use App\Models\ProductSku;
@@ -73,5 +74,22 @@ class OrdersController extends Controller
         });
 
         return $order;
+    }
+
+    /**
+     * 用户订单列表
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function index(Request $request)
+    {
+        $orders = Order::query()
+            // 使用 with 方法预加载，避免 N + 1 问题
+            ->with(['items.product', 'items.productSku'])
+            ->where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate();
+
+        return view('orders.index', ['orders' => $orders]);
     }
 }
